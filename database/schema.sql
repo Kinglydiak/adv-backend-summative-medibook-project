@@ -38,6 +38,8 @@ CREATE TABLE appointments (
   cancelled_at DATETIME NULL,
   refund_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   cancellation_reason VARCHAR(255) NULL,
+  confirmation_queued_at DATETIME NULL,
+  waitlist_processed_at DATETIME NULL,
   slot_active TINYINT(1) GENERATED ALWAYS AS (CASE WHEN status = 'scheduled' THEN 1 ELSE NULL END) STORED,
   PRIMARY KEY (id),
   CONSTRAINT fk_appointments_patient FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE RESTRICT ON UPDATE CASCADE,
