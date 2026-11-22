@@ -1,0 +1,20 @@
+{
+  "name": "adv-backend-summative-medibook-project",
+  "version": "1.0.0",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "worker": "node src/workers/appointmentWorker.js",
+    "test": "jest --runInBand"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "jest": "^29.7.0",
+    "mysql2": "^3.4.5",
+    "redis": "^5.0.0",
+    "supertest": "^7.0.0"
+  }
+}
