@@ -10,6 +10,29 @@ async function getAppointmentById(id) {
   return rows[0] || null;
 }
 
+async function listAppointments() {
+  const [rows] = await pool.query(
+    `SELECT
+      a.id,
+      a.patient_id,
+      p.name AS patient_name,
+      a.doctor_id,
+      d.name AS doctor_name,
+      a.appointment_datetime,
+      a.amount_paid,
+      a.booked_on,
+      a.status,
+      a.cancelled_at,
+      a.refund_amount,
+      a.cancellation_reason
+    FROM appointments a
+    JOIN patients p ON p.id = a.patient_id
+    JOIN doctors d ON d.id = a.doctor_id
+    ORDER BY a.appointment_datetime, a.id`
+  );
+  return rows;
+}
+
 async function getPendingConfirmationAppointments() {
   const [rows] = await pool.query(
     `SELECT id, patient_id, doctor_id, appointment_datetime
@@ -216,6 +239,7 @@ async function promoteWaitlistedAppointment({ patientId, doctorId, appointmentDa
 }
 
 module.exports = {
+  listAppointments,
   createAppointment,
   cancelAppointment,
   getAppointmentById,

@@ -3,6 +3,15 @@ const { validateAppointmentDateTime, validateId } = require('../utils/validation
 const { appendAuditLog } = require('../utils/logger');
 const { enqueueWaitlist } = require('../utils/redisQueues');
 
+async function listAppointments(req, res, next) {
+  try {
+    const appointments = await appointmentModel.listAppointments();
+    return res.json(appointments);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function bookAppointment(req, res, next) {
   try {
     const { patientId, doctorId, appointmentDatetime } = req.body || {};
@@ -102,4 +111,4 @@ async function cancelAppointment(req, res, next) {
   }
 }
 
-module.exports = { bookAppointment, cancelAppointment };
+module.exports = { listAppointments, bookAppointment, cancelAppointment };
