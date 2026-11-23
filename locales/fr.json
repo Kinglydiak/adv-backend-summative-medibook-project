@@ -1,0 +1,18 @@
+{
+  "pageTitle": "Retour d'expérience MediBook",
+  "questions": [
+    "Quel sujet de ce cours vous a semblé le plus difficile, et pourquoi ?",
+    "Décrivez un concept que vous avez compris seulement après les travaux pratiques. Qu'est-ce qui a fait clic ?",
+    "Comment votre approche de la conception de bases de données ou d'API a-t-elle changé depuis le début du trimestre ?",
+    "Que feriez-vous pour améliorer la manière dont ce cours a été enseigné ou évalué ?",
+    "Comment envisagez-vous d'appliquer ce que vous avez appris dans ce cours à l'avenir ?"
+  ],
+  "answers": [
+    "J’ai trouvé les règles de réservation des rendez-vous les plus difficiles, surtout pour éviter les doubles réservations tout en respectant la limite quotidienne. En travaillant sur les contraintes de la base de données et la validation, j’ai compris comment faire respecter une même règle à plusieurs niveaux.",
+    "Le fonctionnement du worker est devenu plus clair lorsque je l’ai relié à la liste d’attente. Lorsqu’un rendez-vous est annulé, le worker peut gérer la promotion séparément et réessayer si un problème temporaire survient. C’est aussi un concept intéressant : les files d’attente sont courantes, mais je n’imaginais pas les utiliser avant de le faire dans ce devoir.",
+    "Je réfléchis maintenant à la structure de la base de données et aux règles métier avant de créer les points de terminaison de l’API. Je comprends aussi l’importance des requêtes paramétrées, de la validation et des tests. J’ai réalisé que les logiciels et les plateformes ne se résument pas au code : ils nécessitent aussi des règles métier, des aménagements pour différents types de personnes et bien plus encore.",
+    "J’ajouterais davantage d’exemples pratiques montrant comment l’API, la base de données et Redis fonctionnent ensemble. Du temps supplémentaire pour s’exercer à tester les requêtes et à corriger les erreurs courantes serait également utile.",
+    "Je mettrai ces compétences à profit pour créer des API avec des structures de données plus claires, des requêtes plus sûres et des tests utiles. Je prévoirai aussi des mécanismes de reprise pour les tâches en arrière-plan lorsqu’un problème temporaire survient. Enfin, je réfléchirai aux règles métier avant de commencer à coder."
+  ],
+  "submit": "Soumettre le retour"
+}

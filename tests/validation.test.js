@@ -103,10 +103,19 @@ describe('feedback page localization', () => {
     expect((response.text.match(/<textarea\b/g) || [])).toHaveLength(5);
   });
 
+  test('prefills the feedback answers and omits the introduction and date', async () => {
+    const response = await request(app).get('/feedback');
+    expect(response.text).toContain('I found appointment booking rules the most challenging');
+    expect(response.text).toContain('I’ll consider business rules before I start typing any code.');
+    expect(response.text).not.toContain('Thank you for taking a moment to reflect on this course.');
+    expect(response.text).not.toContain('class="meta"');
+  });
+
   test('uses the supported French locale and falls back safely for unsupported locale input', async () => {
     const french = await request(app).get('/feedback?lang=fr');
     expect(french.text).toContain('<html lang="fr">');
     expect(french.text).toContain("Retour d'expérience MediBook");
+    expect(french.text).toContain('Le fonctionnement du worker est devenu plus clair');
 
     const unsupported = await request(app).get('/feedback?lang=%22%3E%3Cscript%3E');
     expect(unsupported.text).toContain('<html lang="en">');

@@ -1,0 +1,18 @@
+{
+  "pageTitle": "MediBook Feedback",
+  "questions": [
+    "Which topic in this course did you find most challenging, and why?",
+    "Describe one concept you understood only after the practical assignments. What made it click?",
+    "How has your approach to designing databases or APIs changed since the start of the trimester?",
+    "What would you improve about how this course was taught or assessed?",
+    "How do you plan to apply what you learned in this course going forward?"
+  ],
+  "answers": [
+    "I found appointment booking rules the most challenging, especially preventing double bookings while enforcing the daily limit. Working through the database constraints and validation helped me understand how to protect the same rule at different levels.",
+    "The background worker made more sense once I connected it to the waitlist. When an appointment is cancelled, the worker can handle the promotion separately and retry if something temporarily fails. It’s also an amazing concept that usually exists in general, in terms of queues, but I never imagined using it until I did in this assignment.",
+    "I now think about the database structure and business rules before building API endpoints. I also understand the value of parameterized queries, validation, and tests working together. I realised softwares/platforms consist more than just codes for the software to function. There are business rules, there accommodation for different types of people and much more",
+    "I would add more hands-on examples that show how the API, database, and Redis work together. Extra time to practise testing requests and fixing common errors would also be helpful.",
+    "I’ll use these skills to build APIs with clearer data structures, safer queries, and useful tests. I’ll also plan for background tasks to recover when something temporarily fails. And I’ll consider business rules before I start typing any code."
+  ],
+  "submit": "Submit feedback"
+}
