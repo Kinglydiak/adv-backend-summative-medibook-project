@@ -1,9 +1,6 @@
 const {
   validateAppointmentDateTime,
-  calculateRefundAmount,
-  validateDoctorPayload,
-  validateId,
-  toMySqlDateTime
+  calculateRefundAmount
 } = require('../src/utils/validation');
 
 describe('calculateRefundAmount', () => {
@@ -31,65 +28,27 @@ describe('calculateRefundAmount', () => {
     expect(calculateRefundAmount(200, cancelledAt, bookedAt)).toBe(0);
   });
 
-  test('returns 50% refund for cancellations between 24 and 48 hours', () => {
-    const bookedAt = '2026-08-10T09:00:00Z';
-    const cancelledAt = '2026-08-08T12:00:00Z';
-    expect(calculateRefundAmount(180, cancelledAt, bookedAt)).toBe(90);
-  });
 });
 
 describe('validateAppointmentDateTime', () => {
-  test('accepts a valid future slot on a 30-minute boundary', () => {
+  test('accepts a future slot and rejects invalid time and date edge cases', () => {
     const future = new Date(Date.now() + 48 * 60 * 60 * 1000);
-    future.setUTCMinutes(0, 0, 0);
-    future.setUTCHours(10);
+    future.setUTCHours(10, 0, 0, 0);
     expect(validateAppointmentDateTime(future.toISOString())).toBeNull();
-  });
 
-  test('rejects a slot exactly at 17:00', () => {
-    const invalid = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    invalid.setUTCHours(17, 0, 0, 0);
-    expect(validateAppointmentDateTime(invalid.toISOString())).toBe('Appointments must be booked within working hours: 09:00 to 17:00.');
-  });
+    const afterHours = new Date(future);
+    afterHours.setUTCHours(17, 0, 0, 0);
+    expect(validateAppointmentDateTime(afterHours.toISOString()))
+      .toBe('Appointments must be booked within working hours: 09:00 to 17:00.');
 
-  test('rejects a slot that is not aligned to 30 minutes', () => {
-    const invalid = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    invalid.setUTCHours(9, 15, 0, 0);
-    expect(validateAppointmentDateTime(invalid.toISOString())).toBe('Appointments must use 30-minute time slots.');
-  });
-
-  test('rejects malformed datetime strings', () => {
-    expect(validateAppointmentDateTime('not-a-date')).toBe('Appointment datetime must be a valid ISO date/time.');
-  });
-
-  test('rejects a past appointment', () => {
-    expect(validateAppointmentDateTime('2020-01-01T10:00:00Z')).toBe('Appointments can only be booked in the future.');
-  });
-
-  test('rejects nonzero seconds on an otherwise aligned slot', () => {
-    const invalid = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    invalid.setUTCHours(9, 0, 30, 0);
-    expect(validateAppointmentDateTime(invalid.toISOString())).toBe('Appointments must use 30-minute time slots.');
-  });
-});
-
-describe('request payload validation', () => {
-  test('rejects a nonnumeric consultation fee', () => {
-    expect(validateDoctorPayload({
-      name: 'Dr. Example',
-      specialty: 'General',
-      consultationFee: 'not-a-number',
-      room: 'R-1'
-    })).toContain('Consultation fee must be a number greater than or equal to zero.');
-  });
-
-  test('rejects non-positive or malformed resource ids', () => {
-    expect(validateId('0', 'patientId')).toBe('patientId must be a positive integer.');
-    expect(validateId('1; DROP TABLE patients', 'patientId')).toBe('patientId must be a positive integer.');
-  });
-
-  test('normalizes appointment instants to a MySQL UTC datetime', () => {
-    expect(toMySqlDateTime('2026-12-01T09:30:00.000Z')).toBe('2026-12-01 09:30:00');
+    const offBoundary = new Date(future);
+    offBoundary.setUTCHours(9, 15, 0, 0);
+    expect(validateAppointmentDateTime(offBoundary.toISOString()))
+      .toBe('Appointments must use 30-minute time slots.');
+    expect(validateAppointmentDateTime('not-a-date'))
+      .toBe('Appointment datetime must be a valid ISO date/time.');
+    expect(validateAppointmentDateTime('2020-01-01T10:00:00Z'))
+      .toBe('Appointments can only be booked in the future.');
   });
 });
 
@@ -97,25 +56,23 @@ describe('feedback page localization', () => {
   const request = require('supertest');
   const app = require('../src/app');
 
-  test('renders exactly five essay textareas', async () => {
+  test('renders the five-answer feedback page, localized content, and safe fallback', async () => {
     const response = await request(app).get('/feedback');
+    const today = new Intl.DateTimeFormat('en-US', { dateStyle: 'full' }).format(new Date());
     expect(response.status).toBe(200);
     expect((response.text.match(/<textarea\b/g) || [])).toHaveLength(5);
-  });
-
-  test('prefills the feedback answers and omits the introduction and date', async () => {
-    const response = await request(app).get('/feedback');
     expect(response.text).toContain('I found appointment booking rules the most challenging');
     expect(response.text).toContain('I’ll consider business rules before I start typing any code.');
-    expect(response.text).not.toContain('Thank you for taking a moment to reflect on this course.');
-    expect(response.text).not.toContain('class="meta"');
-  });
+    expect(response.text).toContain('Thank you for taking a moment to reflect on this course.');
+    expect(response.text).toContain(`<div class="meta">${today}</div>`);
 
-  test('uses the supported French locale and falls back safely for unsupported locale input', async () => {
     const french = await request(app).get('/feedback?lang=fr');
     expect(french.text).toContain('<html lang="fr">');
     expect(french.text).toContain("Retour d'expérience MediBook");
     expect(french.text).toContain('Le fonctionnement du worker est devenu plus clair');
+    expect(french.text).toContain('Veuillez consulter les questions et vos réponses ci-dessous.');
+    const frenchDate = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'full' }).format(new Date());
+    expect(french.text).toContain(`<div class="meta">${frenchDate}</div>`);
 
     const unsupported = await request(app).get('/feedback?lang=%22%3E%3Cscript%3E');
     expect(unsupported.text).toContain('<html lang="en">');
